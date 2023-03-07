@@ -1,0 +1,21 @@
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.board{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: center;
+    align-items: center;
+    width: 16cm;
+    height: 16cm;
+}
+.black{
+    background-color: black;
+
+}
+.white{
+    background-color: white;
+}
