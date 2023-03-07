@@ -36,7 +36,6 @@ function printMousePos(e) {
     yPos.setAttribute('pos', `${e.pageY}`);
 }
 
-
 function paintBlack() {
     tiles.forEach(function (e) {
 
