@@ -37,7 +37,6 @@ function printMousePos(e) {
 }
 
 
-
 function paintBlack() {
     tiles.forEach(function (e) {
 
