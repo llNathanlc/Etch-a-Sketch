@@ -6,16 +6,19 @@ body{
 .board{
     display:flex;
     flex-wrap:wrap;
-    justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     width: 16cm;
     height: 16cm;
     border: black 1px solid;
 }
 .black{
     background-color: black;
-
 }
 .white{
     background-color: white;
 }
+.grid{
+    outline: grey 1px solid;
+}
+
+

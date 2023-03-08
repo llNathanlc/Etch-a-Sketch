@@ -1,33 +1,43 @@
 const board = document.querySelector(".board");
 const body = document.querySelector("body");
 let tileSize = 0;
+const eraseAll = document.getElementById("eraseAll");
+const grid = document.getElementById("grid");
+const slider = document.getElementById('slider');
+const gridValue = document.getElementById("gridValue");
 const eraser = document.getElementById("eraser");
-
+const painterBlack = document.getElementById('black');
+const color = document.getElementById("colorChoose");
 
 let tiles = [];
 let down = false;
 let boardArea = 255;
 let cont = 0;
+let replaceTiles = [];
+let backgroundColor = "white";
+let paintingColor = "black";
 
-function createBoard(width, height) {
-    area = width * height;
+function createBoard(size) {
+    area = size * size;
     tileSize = Math.sqrt(boardArea / area);
     for (let i = 1; i <= area; i++) {
         const div = document.createElement("div");
         div.setAttribute(
+            'class',
+            'tile; grid'
+        )
+        div.setAttribute(
             'style',
             ` 
         width: ${tileSize}cm; 
-        height:${tileSize}cm;
-        {*outline: 2px solid black*};       
+        height:${tileSize}cm;      
         `
         );
         div.setAttribute('oncontextmenu', "return false;")
         tiles.push(div);
-
         board.appendChild(div)
-
     }
+    paintBlack();
 }
 
 board.addEventListener('mouseover', printMousePos);
@@ -35,18 +45,20 @@ function printMousePos(e) {
     xPos.setAttribute('pos', `${e.pageX}`);
     yPos.setAttribute('pos', `${e.pageY}`);
 }
-
-function paintBlack() {
+function paintColor() {
+    paintingColor = color.value;
+     
     tiles.forEach(function (e) {
 
         e.addEventListener('mousedown', function () {
-            this.classList.toggle('black');
+
+            this.style.backgroundColor = paintingColor;
             down = true;
-           
+
         });
         e.addEventListener('mouseup', function () {
             down = false;
-           
+
         });
         e.addEventListener('mouseout', function () {
 
@@ -55,7 +67,8 @@ function paintBlack() {
                     (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
                     (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
                     (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-                this.classList.add('black');
+
+                this.style.backgroundColor = paintingColor;
             }
 
             else { return; }
@@ -66,14 +79,16 @@ function paintBlack() {
                     (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
                     (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
                     (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-                this.classList.add('black');
+
+                this.style.backgroundColor = paintingColor;
             }
 
             else { return; }
         });
         e.addEventListener('contextmenu', function () {
             down = false;
-            this.classList.remove('black');
+            this.style.removeProperty('background-color');
+
 
         });
     });
@@ -81,20 +96,153 @@ function paintBlack() {
         down = false;
     });
 }
-function erase() {
+function paintBlack() {
+
+    tiles.forEach(function (e) {
+
+        e.addEventListener('mousedown', function () {
+            this.style.backgroundColor = 'black';
+            down = true;
+
+        });
+        e.addEventListener('mouseup', function () {
+            down = false;
+
+        });
+        e.addEventListener('mouseout', function () {
+
+            if (down &&
+                ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
+                    (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
+                    (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
+                    (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
+                this.style.backgroundColor = 'black';
+            }
+
+            else { return; }
+        });
+        e.addEventListener('mouseover', function () {
+            if (down &&
+                ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
+                    (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
+                    (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
+                    (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
+                this.style.backgroundColor = 'black';
+            }
+
+            else { return; }
+        });
+        e.addEventListener('contextmenu', function () {
+            down = false;
+            this.style.removeProperty('background-color');
+
+        });
+    });
+    window.addEventListener('mouseup', function () {
+        down = false;
+    });
+}
+function paintBlackButton() {
+    painterBlack.addEventListener('click', paintBlack);
+}
+function paintColorButton() {
+    color.addEventListener('input', paintColor);
+}
+function eraserButton() {
     eraser.addEventListener('click', function () {
         tiles.forEach(function (e) {
-            e.classList.remove("black");
+            e.addEventListener('mousedown', function () {
+                this.style.removeProperty('background-color');
+                down = true;
+
+            });
+            e.addEventListener('mouseup', function () {
+                down = false;
+
+            });
+            e.addEventListener('mouseout', function () {
+
+                if (down &&
+                    ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
+                        (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
+                        (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
+                        (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
+                    this.style.removeProperty('background-color');
+                }
+
+                else { return; }
+            });
+            e.addEventListener('mouseover', function () {
+                if (down &&
+                    ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
+                        (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
+                        (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
+                        (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
+                    this.style.removeProperty('background-color');
+                }
+
+                else { return; }
+            });
+        });
+        window.addEventListener('mouseup', function () {
+            down = false;
+        });
+    });
+}
+function gridToggle() {
+    grid.addEventListener('click', function () {
+        tiles.forEach(function (e) {
+            e.classList.toggle('grid');
             down = false;
         })
-        body.classList.remove("black");
     })
+}
+function eraseAllTiles() {
+    eraseAll.addEventListener('click', function () {
+        tiles.forEach(function (e) {
+            e.style.removeProperty('background-color');
+            down = false;
+        })
+
+    })
+}
+function sliderChange() {
+    slider.addEventListener('mouseup', function () {
+        removeTiles();
+        let sliderInt = slider.value;
+        createBoard(sliderInt);
+    });
+
+    slider.addEventListener('keydown', function (e) {
+        if (e.key == 'ArrowLeft' || e.key == 'ArrowRight') {
+            removeTiles();
+            let sliderInt = slider.value;
+            createBoard(sliderInt);
+        }
+        else { return; }
+    });
+
+
+    slider.addEventListener('input', function () {
+        gridValue.textContent = slider.value + " x " + slider.value;
+    });
+
+}
+function removeTiles() {
+    while (board.childElementCount != 0) {
+        board.removeChild(board.lastElementChild);
+        tiles.pop();
+    }
 }
 
 function start() {
-    createBoard(16, 16);
-    paintBlack();
-    erase();
+    createBoard(16);
+    paintBlackButton();
+    paintColorButton();
+    eraserButton();
+    eraseAllTiles();
+    gridToggle();
+    sliderChange();
 }
 start();
 
