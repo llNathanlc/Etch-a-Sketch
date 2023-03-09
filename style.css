@@ -7,7 +7,7 @@ body{
 .page{
     display: flex;
     justify-content: center;
- 
+    background-color:rgb(59, 74, 102) !important;
 }
 .functions{
     border: rgb(63, 59, 59) 1px solid;
@@ -16,6 +16,7 @@ body{
     border-radius: 10px;
 }
 .buttons{
+    background-color: rgb(94, 107, 109) !important;
     display: flex;
     flex-direction: column; 
     align-items: flex-end;
@@ -25,7 +26,7 @@ button{
     border-style: none;
     font-size: larger;
     font-style:italic;
-    background-color: rgb(59, 74, 102);
+    background-color: rgb(59, 74, 102) !important;
     color:white;
     padding:5px;
     border-radius: 10px;
@@ -33,7 +34,7 @@ button{
 .mouseOver{
     transform: scale(1.1);
     border-color: #0a0905;
-    box-shadow: 0 0 1rem #030002;
+    box-shadow: 0 0 1rem #3048b3;
 }
 .clicked{
     transform: scale(0.9);
@@ -48,7 +49,7 @@ button{
     align-items:flex-start;
     width: 17cm;
     height:17cm;
-    
+    overflow: hidden;
     outline: black 1px solid;
 }
 .black{
