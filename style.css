@@ -1,15 +1,55 @@
-body{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+html{
+    background-color: rgb(59, 74, 102) !important;
 }
+body{
+    background-color:rgb(59, 74, 102) !important;
+}
+.page{
+    display: flex;
+    justify-content: center;
+ 
+}
+.functions{
+    border: rgb(63, 59, 59) 1px solid;
+    padding:9px;
+    background-color: rgb(94, 107, 109) !important;
+    border-radius: 10px;
+}
+.buttons{
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-end;
+    gap : 20px;
+}
+button{
+    border-style: none;
+    font-size: larger;
+    font-style:italic;
+    background-color: rgb(59, 74, 102);
+    color:white;
+    padding:5px;
+    border-radius: 10px;
+}
+.mouseOver{
+    transform: scale(1.1);
+    border-color: #0a0905;
+    box-shadow: 0 0 1rem #030002;
+}
+.clicked{
+    transform: scale(0.9);
+}
+  
+
 .board{
+    background-color: white !important;
     display:flex;
     flex-wrap:wrap;
-    align-items: flex-end;
-    width: 16cm;
-    height: 16cm;
-    border: black 1px solid;
+    justify-content:flex-start;
+    align-items:flex-start;
+    width: 17cm;
+    height:17cm;
+    
+    outline: black 1px solid;
 }
 .black{
     background-color: black;
