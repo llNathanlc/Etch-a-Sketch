@@ -61,5 +61,19 @@ button{
 .grid{
     outline: grey 1px solid;
 }
+#slider, #gridValue, #colorChoose{
+    background-color: rgb(94, 107, 109) !important;
+}
+.colorDiv{
+    display: flex;
+    gap: 20px;
+    
+}
+#saveColor{
+    width:2cm;
+    height:1cm;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
 
 
