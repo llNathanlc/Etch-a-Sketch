@@ -1,6 +1,5 @@
 const board = document.querySelector(".board");
 const body = document.querySelector("body");
-let tileSize = 0;
 const eraseAll = document.getElementById("eraseAll");
 const grid = document.getElementById("grid");
 const slider = document.getElementById('slider');
@@ -8,14 +7,51 @@ const gridValue = document.getElementById("gridValue");
 const eraser = document.getElementById("eraser");
 const painterBlack = document.getElementById('black');
 const color = document.getElementById("colorChoose");
+const buttons = document.querySelectorAll('.buttons');
+const saveColor = document.getElementById('saveColor');
 
-let tiles = [];
+let tileSize = 0;
 let down = false;
-let boardArea = 255;
+let boardArea = 288.7;
 let cont = 0;
-let replaceTiles = [];
+let tiles = [];
 let backgroundColor = "white";
 let paintingColor = "black";
+var lastX = 0,
+    lastY = 0;
+let buttonPress = 'painting';
+
+
+function pushButtons(e) {
+    e.addEventListener('pointerover', function () {
+        this.classList.add('mouseOver');
+    });
+
+    e.addEventListener('pointerout', function () {
+        this.classList.remove('mouseOver');
+    });
+
+    e.addEventListener('pointerdown', function () {
+        this.classList.add('clicked');
+    });
+
+    e.addEventListener('pointerup', function () {
+        this.classList.remove('clicked');
+    });
+
+    e.addEventListener('pointerleave', function () {
+        this.classList.remove('clicked');
+    });
+}
+
+function paint(ex, ey) {
+    if (buttonPress === 'painting') {
+        document.elementFromPoint(ex, ey).style.backgroundColor = paintingColor;
+    }
+    if (buttonPress === 'erasing') {
+        document.elementFromPoint(ex, ey).style.removeProperty('background-color');
+    }
+}
 
 function createBoard(size) {
     area = size * size;
@@ -30,184 +66,83 @@ function createBoard(size) {
             'style',
             ` 
         width: ${tileSize}cm; 
-        height:${tileSize}cm;      
+        height:${tileSize}cm;   
+        
         `
         );
-        div.setAttribute('oncontextmenu', "return false;")
+        div.setAttribute('oncontextmenu', "return false;");
         tiles.push(div);
-        board.appendChild(div)
+        board.appendChild(div);
     }
     paintBlack();
 }
 
-board.addEventListener('mouseover', printMousePos);
-function printMousePos(e) {
-    xPos.setAttribute('pos', `${e.pageX}`);
-    yPos.setAttribute('pos', `${e.pageY}`);
+function paintBlack() {
+    paintingColor = 'black';
+    buttonPress = 'painting';
+    board.addEventListener('pointerdown', function (e) {
+        document.elementFromPoint(e.pageX, e.pageY).style.backgroundColor = paintingColor;
+        lastX = e.pageX;
+        lastY = e.pageY;
+        down = true;
+    });
+    board.addEventListener('pointerup', function () {
+        down = false;
+
+    });
+
+    board.addEventListener('pointermove', function (e) {
+        calculateCoordinates(e);
+    });
+    window.addEventListener('pointerup', function () {
+        down = false;
+    });
 }
+
 function paintColor() {
     paintingColor = color.value;
-     
-    tiles.forEach(function (e) {
-
-        e.addEventListener('mousedown', function () {
-
-            this.style.backgroundColor = paintingColor;
-            down = true;
-
-        });
-        e.addEventListener('mouseup', function () {
-            down = false;
-
-        });
-        e.addEventListener('mouseout', function () {
-
-            if (down &&
-                ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
-                    (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
-                    (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
-                    (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-
-                this.style.backgroundColor = paintingColor;
-            }
-
-            else { return; }
-        });
-        e.addEventListener('mouseover', function () {
-            if (down &&
-                ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
-                    (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
-                    (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
-                    (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-
-                this.style.backgroundColor = paintingColor;
-            }
-
-            else { return; }
-        });
-        e.addEventListener('contextmenu', function () {
-            down = false;
-            this.style.removeProperty('background-color');
-
-
-        });
+    saveColor.style.backgroundColor = paintingColor;
+    buttonPress = 'painting';
+    board.addEventListener('pointerown', function (e) {
+        document.elementFromPoint(e.pageX, e.pageY).style.backgroundColor = paintingColor;
+        lastX = e.pageX;
+        lastY = e.pageY;
+        down = true;
     });
-    window.addEventListener('mouseup', function () {
+    board.addEventListener('pointerup', function () {
+        down = false;
+
+    });
+
+    board.addEventListener('pointermove', function (e) {
+        calculateCoordinates(e);
+    });
+    window.addEventListener('pointerup', function () {
         down = false;
     });
 }
-function paintBlack() {
-
-    tiles.forEach(function (e) {
-
-        e.addEventListener('mousedown', function () {
-            this.style.backgroundColor = 'black';
-            down = true;
-
-        });
-        e.addEventListener('mouseup', function () {
-            down = false;
-
-        });
-        e.addEventListener('mouseout', function () {
-
-            if (down &&
-                ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
-                    (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
-                    (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
-                    (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-                this.style.backgroundColor = 'black';
-            }
-
-            else { return; }
-        });
-        e.addEventListener('mouseover', function () {
-            if (down &&
-                ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
-                    (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
-                    (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
-                    (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-                this.style.backgroundColor = 'black';
-            }
-
-            else { return; }
-        });
-        e.addEventListener('contextmenu', function () {
-            down = false;
-            this.style.removeProperty('background-color');
-
-        });
+function eraseColor() {
+    buttonPress = 'erasing';
+    board.addEventListener('pointerdown', function (e) {
+        document.elementFromPoint(e.pageX, e.pageY).style.removeProperty('background-color');
+        lastX = e.pageX;
+        lastY = e.pageY;
+        down = true;
     });
-    window.addEventListener('mouseup', function () {
+    board.addEventListener('pointerup', function () {
+        down = false;
+
+    });
+    board.addEventListener('pointermove', function (e) {
+        calculateCoordinates(e);
+    });
+    window.addEventListener('pointerup', function () {
         down = false;
     });
 }
-function paintBlackButton() {
-    painterBlack.addEventListener('click', paintBlack);
-}
-function paintColorButton() {
-    color.addEventListener('input', paintColor);
-}
-function eraserButton() {
-    eraser.addEventListener('click', function () {
-        tiles.forEach(function (e) {
-            e.addEventListener('mousedown', function () {
-                this.style.removeProperty('background-color');
-                down = true;
 
-            });
-            e.addEventListener('mouseup', function () {
-                down = false;
-
-            });
-            e.addEventListener('mouseout', function () {
-
-                if (down &&
-                    ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
-                        (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
-                        (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
-                        (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-                    this.style.removeProperty('background-color');
-                }
-
-                else { return; }
-            });
-            e.addEventListener('mouseover', function () {
-                if (down &&
-                    ((xPos.getAttribute('pos') >= this.getBoundingClientRect().left) ||
-                        (xPos.getAttribute('pos') <= this.getBoundingClientRect().right) ||
-                        (yPos.getAttribute('pos') >= this.getBoundingClientRect().top) ||
-                        (yPos.getAttribute('pos') <= this.getBoundingClientRect().bottom))) {
-                    this.style.removeProperty('background-color');
-                }
-
-                else { return; }
-            });
-        });
-        window.addEventListener('mouseup', function () {
-            down = false;
-        });
-    });
-}
-function gridToggle() {
-    grid.addEventListener('click', function () {
-        tiles.forEach(function (e) {
-            e.classList.toggle('grid');
-            down = false;
-        })
-    })
-}
-function eraseAllTiles() {
-    eraseAll.addEventListener('click', function () {
-        tiles.forEach(function (e) {
-            e.style.removeProperty('background-color');
-            down = false;
-        })
-
-    })
-}
 function sliderChange() {
-    slider.addEventListener('mouseup', function () {
+    slider.addEventListener('pointerup', function () {
         removeTiles();
         let sliderInt = slider.value;
         createBoard(sliderInt);
@@ -226,7 +161,6 @@ function sliderChange() {
     slider.addEventListener('input', function () {
         gridValue.textContent = slider.value + " x " + slider.value;
     });
-
 }
 function removeTiles() {
     while (board.childElementCount != 0) {
@@ -235,89 +169,110 @@ function removeTiles() {
     }
 }
 
-function start() {
-    createBoard(16);
-    paintBlackButton();
-    paintColorButton();
-    eraserButton();
-    eraseAllTiles();
-    gridToggle();
-    sliderChange();
+function paintBlackButton() {
+    painterBlack.addEventListener('pointerdown', paintBlack);
+    pushButtons(painterBlack);
 }
-start();
 
+function paintColorButton() {
+    color.addEventListener('input', paintColor);
+    pushButtons(color);
+}
 
-/*
-function getCoordinates(){
-    tiles.forEach(function(e){
-        e.addEventListener('mousedown', function(){
-            x0.setAttribute('pos',`${this.getBoundingClientRect().left}`);
-            y0.setAttribute('pos',`${this.getBoundingClientRect().top}`);
-            width.setAttribute('width',`${this.getBoundingClientRect().width}`)
-        });
-        e.addEventListener('mouseover', function(){
-            x1.setAttribute('pos',`${this.getBoundingClientRect().left}`);
-            y1.setAttribute('pos',`${this.getBoundingClientRect().top}`);
-            plotLine(x0.getAttribute('pos'),y0.getAttribute('pos'),x1.getAttribute('pos'),y1.getAttribute('pos'),);
+function eraserButton() {
+    eraser.addEventListener('pointerdown', eraseColor);
+    pushButtons(eraser);
+}
+
+function saveColorButton() {
+    saveColor.style.backgroundColor = paintingColor;
+    saveColor.addEventListener('pointerdown', paintColor)
+    pushButtons(saveColor);
+}
+
+function gridToggleButton() {
+    grid.addEventListener('pointerdown', function () {
+        tiles.forEach(function (e) {
+            e.classList.toggle('grid');
         });
     });
+    pushButtons(grid);
 }
-function paint(x,y){
-    tiles.forEach(function(e){
-        e.addEventListener('mousedown',function(){
-            if(document.elementFromPoint(x,y) == html||document.elementFromPoint(x,y) == body || document.elementFromPoint(x,y) == eraser){return;}
-            else{
-            document.elementFromPoint(x,y).classList.add('black');}
+
+function eraseAllColorButton() {
+    eraseAll.addEventListener('pointerdown', function () {
+        tiles.forEach(function (e) {
+            e.style.removeProperty('background-color');
         })
-    })
+    });
+    pushButtons(eraseAll);
 }
-function plotLineLow(x0, y0, x1, y1) {
-    dx = x1 - x0;
-    dy = y1 - y0;
-    let yi = 1;
-    if (dy < 0) {
-        yi = -1;
-        dy = -dy;
-    }
-    let D = (2 * dy) - dx;
-    let y = y0;
 
-    for (let x = 0; x0 <= x1; x0+=width.getAttribute('width')) {
-        paint(x, y);
-        if (D > 0) {
-            y = y + yi;
-            D = D + (2 * (dy - dx));
-        }
-        else { D = D + 2 * dy; }
-    }
-}
-function plotLineHigh(x0, y0, x1, y1) {
-    dx = x1 - x0;
-    dy = y1 - y0;
-    let xi = 1;
-    if (dx < 0) {
-        xi = -1;
-        dx = -dx;
-    }
-    let D = (2 * dx) - dy;
-    let x = x0;
+function calculateCoordinates(e) {
+    if (down) {
+        var mouseX = e.pageX;
+        var mouseY = e.pageY;
 
-    for (let y = 0; y0 <= y1; y0+=width.getAttribute('width')) {
-        paint(x, y);
-        if (D > 0) {
-            x = x + xi;
-            D = D + (2 * (dx - dy));
+        var x0 = mouseX,
+            y0 = mouseY,
+            x1 = lastX,
+            y1 = lastY;
+
+        var steep = (Math.abs(y1 - y0) > Math.abs(x1 - x0));
+        if (steep) {
+            var x = x0;
+            x0 = y0;
+            y0 = x;
+
+            var y = y1;
+            y1 = x1;
+            x1 = y;
         }
-        else { D = D + 2 * dx; }
+        if (x0 > x1) {
+            var x = x0;
+            x0 = x1;
+            x1 = x;
+
+            var y = y0;
+            y0 = y1;
+            y1 = y;
+        }
+        var dx = x1 - x0,
+            dy = Math.abs(y1 - y0),
+            error = 0,
+            de = dy / dx,
+            yStep = -1,
+            y = y0;
     }
+    if (y0 < y1) {
+        yStep = 1;
+    }
+    for (var x = x0; x < x1; x++) {
+        if (steep) {
+            paint(y, x);
+        } else {
+            paint(x, y);
+        }
+
+        error += de;
+        if (error >= 0.5) {
+            y += yStep;
+            error -= 1.0;
+        }
+    }
+    lastX = mouseX;
+    lastY = mouseY;
 }
-function plotLine(x0, y0, x1, y1) {
-    if (Math.abs(y1 - y0) < Math.abs(x1 - x0)) {
-        if (x0 > x1) { plotLineLow(x1, y1, x0, y0); }
-        else { plotLineLow(x0, y0, x1, y1); }
-    }
-    else {
-        if (y0 > y1) { plotLineHigh(x1, y1, x0, y0); }
-        else { plotLineHigh(x0, y0, x1, y1); }
-    }
-}*/
+
+function start() {
+    createBoard(17);
+    paintBlackButton();
+    paintColorButton();
+    saveColorButton();
+    eraserButton();
+    eraseAllColorButton();
+    gridToggleButton();
+    sliderChange();
+}
+
+start();
